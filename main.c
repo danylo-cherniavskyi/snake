@@ -7,18 +7,19 @@
 #include "someWinFuncs.h"
 #include "funcs.h"
 #include "settings.h"
+#include "defs.h"
 
-typedef struct {
-    int length;
-    int **coords;
-    bool isDead;
-} Snake;
+// typedef struct {
+//     int length;
+//     int **coords;
+//     bool isDead;
+// } Snake;
 
-struct Direction
-{
-    int x_move;
-    int y_move;
-};
+// struct Direction
+// {
+//     int x_move;
+//     int y_move;
+// };
 
 char field[HEIGTH][WIDTH] =
     {
@@ -33,7 +34,8 @@ char field[HEIGTH][WIDTH] =
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}};
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+    };
 
 int main(int argc, char const *argv[])
 {
@@ -66,7 +68,7 @@ int main(int argc, char const *argv[])
     {
         snake.coords[i] = (int*)calloc(2, sizeof(int));
     }
-
+    snake.length = 3;
     
 
     // snake.coords = 
@@ -76,19 +78,24 @@ int main(int argc, char const *argv[])
 
     while (/*!kbhit()*/ !snake.isDead)
     {
-        if ((coords[0] + dir.x_move) == HEIGTH || (coords[0] + dir.x_move) == -1 ||
-            (coords[1] + dir.y_move) == WIDTH || (coords[1] + dir.y_move) == -1)
+        if (isCollided(snake, dir))
+        {
+            snake.isDead = true;
             break;
-        coords[0] += dir.x_move;
-        coords[1] += dir.y_move;
+        }
+
+        // coords[0] += dir.x_move;
+        // coords[1] += dir.y_move;
+
+        moveSnake(&snake, dir);
 
         system("clear");
         clearField(*field, HEIGTH, WIDTH);
-        drawSnake(*field, coords, HEIGTH, WIDTH);
+        drawSnake(*field, snake, HEIGTH, WIDTH);
         printField(*field, HEIGTH, WIDTH);
         // printf("%c, %d:%d", ch, coords[0], coords[1]);
 
-        usleep(50000);
+        usleep(500000);
 
         if (kbhit())
         {
@@ -120,6 +127,7 @@ int main(int argc, char const *argv[])
 
             if (ch == 'q')
             {
+                snake.isDead = true;
                 break;
             }
 
