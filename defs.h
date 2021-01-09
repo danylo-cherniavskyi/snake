@@ -7,11 +7,12 @@ typedef struct {
     bool isDead;
 } Snake;
 
-
 struct Direction
 {
     int x_move;
     int y_move;
 };
+
+#define ABS(x) (((x) < 0) ? (-x) : (x))
 
 #endif

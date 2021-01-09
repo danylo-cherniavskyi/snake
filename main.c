@@ -9,18 +9,6 @@
 #include "settings.h"
 #include "defs.h"
 
-// typedef struct {
-//     int length;
-//     int **coords;
-//     bool isDead;
-// } Snake;
-
-// struct Direction
-// {
-//     int x_move;
-//     int y_move;
-// };
-
 char field[HEIGTH][WIDTH] =
     {
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -71,12 +59,9 @@ int main(int argc, char const *argv[])
     snake.length = 3;
     
 
-    // snake.coords = 
-
     system("clear");
     printField(*field, HEIGTH, WIDTH);
-
-    while (/*!kbhit()*/ !snake.isDead)
+    while (!snake.isDead)
     {
         if (isCollided(snake, dir))
         {
@@ -84,43 +69,35 @@ int main(int argc, char const *argv[])
             break;
         }
 
-        // coords[0] += dir.x_move;
-        // coords[1] += dir.y_move;
-
         moveSnake(&snake, dir);
 
         system("clear");
         clearField(*field, HEIGTH, WIDTH);
         drawSnake(*field, snake, HEIGTH, WIDTH);
         printField(*field, HEIGTH, WIDTH);
-        // printf("%c, %d:%d", ch, coords[0], coords[1]);
 
         usleep(500000);
 
-        if (kbhit())
+        while (kbhit())
         {
-            ch = getch();
-            if (ch == 'w' && coords[0] > 0)
+            ch = getc(stdin);
+            if (ch == 'w' && dir.x_move != 1 && ABS(snake.coords[1][0] - snake.coords[0][0]) == 0)
             {
-                // coords[0]--;
                 dir.y_move = 0;
                 dir.x_move = -1;
             }
-            if (ch == 's' && coords[0] < HEIGTH - 1)
+            if (ch == 's' && dir.x_move != -1 && ABS(snake.coords[1][0] - snake.coords[0][0]) == 0)
             {
-                // coords[0]++;
                 dir.y_move = 0;
                 dir.x_move = 1;
             }
-            if (ch == 'a' && coords[1] > 0)
+            if (ch == 'a' && dir.y_move != 1 && ABS(snake.coords[1][1] - snake.coords[0][1]) == 0)
             {
-                // coords[1]--;
                 dir.x_move = 0;
                 dir.y_move = -1;
             }
-            if (ch == 'd' && coords[1] < WIDTH - 1)
+            if (ch == 'd' && dir.y_move != -1 && ABS(snake.coords[1][1] - snake.coords[0][1]) == 0)
             {
-                // coords[1]++;
                 dir.x_move = 0;
                 dir.y_move = 1;
             }
@@ -130,15 +107,10 @@ int main(int argc, char const *argv[])
                 snake.isDead = true;
                 break;
             }
-
-            // else
-            // {
-            // fprintf(stdin, "%c", ' ');
-            // }
         }
     }
 
-    // printf("%d\n", ~2);
+    printf("\n");
 
     return 0;
 }
