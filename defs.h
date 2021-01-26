@@ -4,6 +4,7 @@
 typedef struct {
     int length;
     int **coords;
+    int *appleCoords;
     bool isDead;
 } Snake;
 

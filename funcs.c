@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "defs.h"
 #include "settings.h"
@@ -71,6 +72,13 @@ bool isCollided(Snake snake, struct Direction dir)
     if ((snake.coords[0][0] + dir.x_move) == HEIGTH || (snake.coords[0][0] + dir.x_move) == -1 ||
         (snake.coords[0][1] + dir.y_move) == WIDTH || (snake.coords[0][1] + dir.y_move) == -1)
         res = true;
+    for (int i = 1; i < snake.length; i++)
+    {
+        if (snake.coords[0][0] + dir.x_move == snake.coords[i][0] && snake.coords[0][1] + dir.y_move == snake.coords[i][1])
+        {
+            res = true;
+        }
+    }
 
     return res;
 }
@@ -83,6 +91,11 @@ void drawSnake(char *field, Snake snake, int heigth, int width)
     {
         *(field + snake.coords[i][0]*width + snake.coords[i][1]) = 'Y';
     }
+}
+
+void drawApple(char *field, Snake snake, int width)
+{
+    *(field + snake.appleCoords[0]*width + snake.appleCoords[1]) = 'R';
 }
 
 int fillCoords(Snake *snake, int position, int coord_x, int coord_y)
@@ -105,10 +118,62 @@ void copyIntArr(int dest[], int arr[], int size)
     }
 }
 
-// void dealloc(Snake snake, int lastAllocated)
-// {
+void createApple(Snake *snake, char *field, int height, int width)
+{
+    srand(time(NULL));
+    int appleXCoord = rand() % height,
+        appleYCoord = rand() % width;
+    bool isSet = false;
+    while (!isSet)
+    {
+        isSet = true;
+        for (int i = 0; i < snake->length; i++)
+        {
+            if (snake->coords[i][0] == appleXCoord && snake->coords[i][1] == appleYCoord)
+            {
+                appleXCoord = rand() % height;
+                appleYCoord = rand() % width;
+                isSet = false;
+                break;
+            }
+        }
+    }
 
-// }
+    snake->appleCoords[0] = appleXCoord;
+    snake->appleCoords[1] = appleYCoord;
+}
+
+void addSnakeEl(Snake *snake, struct Direction dir)
+{
+    int **tmp = NULL;
+    snake->length++;
+    tmp = (int**)realloc(snake->coords, snake->length*sizeof(int*));
+
+    if (tmp)
+        snake->coords = tmp;
+    else
+    {
+        snake->length--;
+        return;
+    }
+    snake->coords[snake->length-1] = (int*)calloc(2, sizeof(int));
+
+    if (snake->coords[snake->length-1] == NULL)
+    {
+        tmp = (int**)realloc(snake->coords, (snake->length-1)*sizeof(int*));
+        snake->length--;
+        if (tmp)
+            snake->coords = tmp;
+        else
+            return;
+    }
+
+    snake->coords[snake->length-1][0] = snake->coords[snake->length-2][0] + \
+    (snake->coords[snake->length-2][0] - snake->coords[snake->length-3][0]);
+    
+    snake->coords[snake->length-1][1] = snake->coords[snake->length-2][1] + \
+    (snake->coords[snake->length-2][1] - snake->coords[snake->length-3][1]);
+}
 
 void moveSnake(Snake *snake, struct Direction dir)
 {

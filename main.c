@@ -56,10 +56,12 @@ int main(int argc, char const *argv[])
     {
         snake.coords[i] = (int*)calloc(2, sizeof(int));
     }
+    snake.appleCoords = (int*)calloc(2, sizeof(int));
     snake.length = 3;
     
 
     system("clear");
+    createApple(&snake, *field, HEIGTH, WIDTH);
     printField(*field, HEIGTH, WIDTH);
     while (!snake.isDead)
     {
@@ -71,12 +73,21 @@ int main(int argc, char const *argv[])
 
         moveSnake(&snake, dir);
 
+        if (snake.coords[0][0] == snake.appleCoords[0] && snake.coords[0][1] == snake.appleCoords[1])
+        {
+            addSnakeEl(&snake, dir);
+            createApple(&snake, *field, HEIGTH, WIDTH);
+        }
+
         system("clear");
         clearField(*field, HEIGTH, WIDTH);
         drawSnake(*field, snake, HEIGTH, WIDTH);
+        drawApple(*field, snake, WIDTH);
         printField(*field, HEIGTH, WIDTH);
 
-        usleep(500000);
+        usleep(500000 /*- snake.length*10000*/);
+        // printf("coords: x = %d y = %d", snake.coords[0][0], snake.coords[0][1]);
+
 
         while (kbhit())
         {

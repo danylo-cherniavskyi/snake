@@ -1,2 +1,2 @@
-#define HEIGTH 20
-#define WIDTH 12
+#define HEIGTH 12
+#define WIDTH 8
