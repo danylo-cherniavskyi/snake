@@ -71,13 +71,14 @@ int main(int argc, char const *argv[])
             break;
         }
 
-        moveSnake(&snake, dir);
-
-        if (snake.coords[0][0] == snake.appleCoords[0] && snake.coords[0][1] == snake.appleCoords[1])
+        if (snake.coords[0][0]+dir.x_move == snake.appleCoords[0] && snake.coords[0][1]+dir.y_move == snake.appleCoords[1])
         {
             addSnakeEl(&snake, dir);
+            moveSnake(&snake, dir);
             createApple(&snake, *field, HEIGTH, WIDTH);
         }
+        else
+            moveSnake(&snake, dir);
 
         system("clear");
         clearField(*field, HEIGTH, WIDTH);
@@ -86,8 +87,6 @@ int main(int argc, char const *argv[])
         printField(*field, HEIGTH, WIDTH);
 
         usleep(500000 /*- snake.length*10000*/);
-        // printf("coords: x = %d y = %d", snake.coords[0][0], snake.coords[0][1]);
-
 
         while (kbhit())
         {

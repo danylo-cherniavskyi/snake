@@ -124,6 +124,7 @@ void createApple(Snake *snake, char *field, int height, int width)
     int appleXCoord = rand() % height,
         appleYCoord = rand() % width;
     bool isSet = false;
+
     while (!isSet)
     {
         isSet = true;
