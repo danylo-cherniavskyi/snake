@@ -4,53 +4,29 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "someWinFuncs.h"
 #include "funcs.h"
 #include "settings.h"
 #include "defs.h"
 
-char field[HEIGTH][WIDTH] =
-    {
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
-    };
+#ifdef __linux__
+    #include "someWinFuncs.h"
+    #define CLEAR_SEQ "clear"
+    #define GET_CHARACTER_FUNC getc(stdin)
+#elif defined _WIN64 || defined _WIN32
+    #include <conio.h>
+    #define CLEAR_SEQ "cls"
+    #define GET_CHARACTER_FUNC getch()
+#endif
+
+char field[HEIGTH][WIDTH] = { 0 };
 
 int main(int argc, char const *argv[])
 {
-    // system("clear");
-    // field[0][4] = 'G';
-    // printField(*field, HEIGTH, WIDTH);
-
-    // for (int i = 1; i < 12; i++)
-    // {
-    //     // sleep(1);
-    //     usleep(500000);
-    //     system("clear");
-    //     if (i > 2)
-    //         field[i-3][4] = ' ';
-    //     if (i > 1)
-    //         field[i-2][4] = 'R';
-    //     field[i-1][4] = 'R';
-    //     field[i][4] = 'G';
-
-    //     printField(*field, HEIGTH, WIDTH);
-    // }
-
+    clearField(*field, HEIGTH, WIDTH);
     char ch = ' ';
-    int coords[] = {1, 1};
     struct Direction dir = {1, 0};
 
-    Snake snake = {.isDead = false};
+    Snake snake = {.maxLen = HEIGTH * WIDTH, .isDead = false};
     snake.coords = (int**)calloc(3, sizeof(int*));
     for (int i = 0; i < 3; i++)
     {
@@ -59,9 +35,10 @@ int main(int argc, char const *argv[])
     snake.appleCoords = (int*)calloc(2, sizeof(int));
     snake.length = 3;
     
-
-    system("clear");
+    system(CLEAR_SEQ);
     createApple(&snake, *field, HEIGTH, WIDTH);
+    drawSnake(*field, snake, HEIGTH, WIDTH);
+    drawApple(*field, snake, WIDTH);
     printField(*field, HEIGTH, WIDTH);
     while (!snake.isDead)
     {
@@ -75,22 +52,35 @@ int main(int argc, char const *argv[])
         {
             addSnakeEl(&snake, dir);
             moveSnake(&snake, dir);
+
+            if (snake.maxLen == snake.length)
+            {
+                snake.isDead = true;
+                system(CLEAR_SEQ);
+                clearField(*field, HEIGTH, WIDTH);
+                drawSnake(*field, snake, HEIGTH, WIDTH);
+                printField(*field, HEIGTH, WIDTH);
+                printf("You won!\n");
+
+                continue;
+            }
+
             createApple(&snake, *field, HEIGTH, WIDTH);
         }
         else
             moveSnake(&snake, dir);
 
-        system("clear");
+        system(CLEAR_SEQ);
         clearField(*field, HEIGTH, WIDTH);
         drawSnake(*field, snake, HEIGTH, WIDTH);
         drawApple(*field, snake, WIDTH);
         printField(*field, HEIGTH, WIDTH);
 
-        usleep(500000 /*- snake.length*10000*/);
+        usleep(500000);
 
         while (kbhit())
         {
-            ch = getc(stdin);
+            ch = GET_CHARACTER_FUNC;
             if (ch == 'w' && dir.x_move != 1 && ABS(snake.coords[1][0] - snake.coords[0][0]) == 0)
             {
                 dir.y_move = 0;
