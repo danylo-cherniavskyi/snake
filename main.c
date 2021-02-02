@@ -45,7 +45,8 @@ int main(int argc, char const *argv[])
         if (isCollided(snake, dir))
         {
             snake.isDead = true;
-            break;
+            printf("Game over!\n");
+            continue;
         }
 
         if (snake.coords[0][0]+dir.x_move == snake.appleCoords[0] && snake.coords[0][1]+dir.y_move == snake.appleCoords[1])
