@@ -6,6 +6,7 @@ typedef struct {
     int **coords;
     int *appleCoords;
     bool isDead;
+    int maxLen;
 } Snake;
 
 struct Direction
