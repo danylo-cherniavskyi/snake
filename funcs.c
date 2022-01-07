@@ -1,29 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <time.h>
+#include "funcs.h"
 
-#include "defs.h"
-#include "settings.h"
-// #include "settings.h"
-// #define CHARACTER(str) printf("\u" str)
-
-// void printChars(char ch[], int amount)
-// {
-//     for (int i = 0; i < amount; i++)
-//     {
-//         printf("%s", ch);
-//         // CHARACTER(number);
-//     }
-// }
-
-void clearField(char *field, int height, int width)
+void clearField(char **field, int height, int width)
 {
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            *(field+i*width+j) = ' ';
+            field[i][j] = ' ';
         }
     }
 }
@@ -36,42 +19,49 @@ void printChars(char ch[], int amount)
     }
 }
 
-void printField(char *field, int heigth, int width)
+void printField(char **field, int heigth, int width)
 {
-    printf("\u250C");
-    printChars("\u2500", width);
-    printf("\u2510\n");
-
     for (int i = 0; i < heigth; i++)
     {
-        printf("\u2502");
         for (int j = 0; j < width; j++)
         {
-            if (*(field + width*i + j) == 'R')
-                printf("\e[41m \e[0m" /**(field + width*i + j)*/);
-            else if (*(field + width*i + j) == 'G')
-                printf("\e[42m \e[0m" /**(field + width*i + j)*/);
-            else if (*(field + width*i + j) == 'Y')
-                printf("\e[43m \e[0m");
-            // else if (*(field + width*i + j) == 'C')
-            //     printf("\e[49m " /**(field + width*i + j)*/);
+            if (field[i][j] == 'R')
+            {
+                attron(COLOR_PAIR(APPLE_COLOR));
+                mvprintw(i + 1, j + 1, " ");
+                attroff(COLOR_PAIR(APPLE_COLOR));
+            }
+            else if (field[i][j] == 'G')
+            {
+                attron(COLOR_PAIR(HEAD_COLOR));
+                mvprintw(i + 1, j + 1, " ");
+                attroff(COLOR_PAIR(HEAD_COLOR));
+            }
+            else if (field[i][j] == 'Y')
+            {
+                attron(COLOR_PAIR(BODY_COLOR));
+                mvprintw(i + 1, j + 1, " ");
+                attroff(COLOR_PAIR(BODY_COLOR));
+            }
             else
-                printf("%c", *(field + width*i + j));
+            {
+                mvprintw(i + 1, j + 1, "%c", field[i][j]);
+            }
         }
-        printf("\u2502\n");
     }
-
-    printf("\u2514");
-    printChars("\u2500", width);
-    printf("\u2518\n");
 }
 
-bool isCollided(Snake snake, struct Direction dir)
+bool isCollided(Snake snake, struct Direction dir, int height, int width)
 {
     bool res = false;
-    if ((snake.coords[0][0] + dir.x_move) == HEIGTH || (snake.coords[0][0] + dir.x_move) == -1 ||
-        (snake.coords[0][1] + dir.y_move) == WIDTH || (snake.coords[0][1] + dir.y_move) == -1)
+    
+    // Collision with walls
+    if ((snake.coords[0][0] + dir.x_move) == height + 1 || (snake.coords[0][0] + dir.x_move) == -2 ||
+        (snake.coords[0][1] + dir.y_move) == width + 1 || (snake.coords[0][1] + dir.y_move) == -2)
         res = true;
+
+    // TODO: collision with snake doesn't work properly
+    // Collision with snake
     for (int i = 1; i < snake.length; i++)
     {
         if (snake.coords[0][0] + dir.x_move == snake.coords[i][0] && snake.coords[0][1] + dir.y_move == snake.coords[i][1])
@@ -83,19 +73,18 @@ bool isCollided(Snake snake, struct Direction dir)
     return res;
 }
 
-void drawSnake(char *field, Snake snake, int heigth, int width)
+void drawSnake(char **field, Snake snake)
 {
-    // *(field+coords[0]*width+coords[1]) = 'G';
-    *(field + snake.coords[0][0]*width + snake.coords[0][1]) = 'G';
+    field[snake.coords[0][0]][snake.coords[0][1]] = 'G';
     for (int i = 1; i < snake.length; i++)
     {
-        *(field + snake.coords[i][0]*width + snake.coords[i][1]) = 'Y';
+        field[snake.coords[i][0]][snake.coords[i][1]] = 'Y';
     }
 }
 
-void drawApple(char *field, Snake snake, int width)
+void drawApple(char **field, Snake snake)
 {
-    *(field + snake.appleCoords[0]*width + snake.appleCoords[1]) = 'R';
+    field[snake.appleCoords[0]][snake.appleCoords[1]] = 'R';
 }
 
 int fillCoords(Snake *snake, int position, int coord_x, int coord_y)
@@ -118,7 +107,7 @@ void copyIntArr(int dest[], int arr[], int size)
     }
 }
 
-void createApple(Snake *snake, char *field, int height, int width)
+void createApple(Snake *snake, int height, int width)
 {
     srand(time(NULL));
     int appleXCoord = rand() % height,
@@ -126,7 +115,7 @@ void createApple(Snake *snake, char *field, int height, int width)
     bool isSet = false;
 
     while (!isSet)
-    {
+    { 
         isSet = true;
         for (int i = 0; i < snake->length; i++)
         {
@@ -144,7 +133,7 @@ void createApple(Snake *snake, char *field, int height, int width)
     snake->appleCoords[1] = appleYCoord;
 }
 
-void addSnakeEl(Snake *snake, struct Direction dir)
+void addSnakeEl(Snake *snake)
 {
     int **tmp = NULL;
     snake->length++;

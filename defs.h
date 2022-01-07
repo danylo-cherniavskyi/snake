@@ -16,5 +16,8 @@ struct Direction
 };
 
 #define ABS(x) (((x) < 0) ? (-x) : (x))
+#define HEAD_COLOR 1
+#define BODY_COLOR 2
+#define APPLE_COLOR 3
 
 #endif

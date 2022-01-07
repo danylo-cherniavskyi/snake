@@ -1,5 +1,9 @@
 FLAGS = -Wall -Wextra -pedantic
-SOURCES = main.c someWinFuncs.c funcs.c
+LIBS = -lncurses -lpthread
+SOURCES = main.c funcs.c
 
 snake: $(SOURCES)
-	$(CC) $(SOURCES) -o snake $(FLAGS)
+	$(CC) $(SOURCES) -o snake $(FLAGS) $(LIBS)
+
+exec: snake
+	./snake
