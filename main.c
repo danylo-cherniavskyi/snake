@@ -91,6 +91,12 @@ int main(int argc, char const *argv[])
         clear();
         clearField(field, height, width);
         box(stdscr, 0, 0);
+        if (isCollided(snake, dir, height, width))
+        {
+            snake.isDead = true;
+            continue;
+        }
+
         if (snake.coords[0][0]+dir.x_move == snake.appleCoords[0] && snake.coords[0][1]+dir.y_move == snake.appleCoords[1])
         {
             addSnakeEl(&snake);
@@ -100,12 +106,6 @@ int main(int argc, char const *argv[])
         else
         {
             moveSnake(&snake, dir);
-        }
-
-        if (isCollided(snake, dir, height, width))
-        {
-            snake.isDead = true;
-            continue;
         }
 
         drawSnake(field, snake);

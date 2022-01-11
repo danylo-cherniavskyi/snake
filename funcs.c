@@ -54,14 +54,11 @@ void printField(char **field, int heigth, int width)
 bool isCollided(Snake snake, struct Direction dir, int height, int width)
 {
     bool res = false;
-    
-    // Collision with walls
-    if ((snake.coords[0][0] + dir.x_move) == height + 1 || (snake.coords[0][0] + dir.x_move) == -2 ||
-        (snake.coords[0][1] + dir.y_move) == width + 1 || (snake.coords[0][1] + dir.y_move) == -2)
+
+    if ((snake.coords[0][0] + dir.x_move) == height || (snake.coords[0][0] + dir.x_move) == -1 ||
+        (snake.coords[0][1] + dir.y_move) == width || (snake.coords[0][1] + dir.y_move) == -1)
         res = true;
 
-    // TODO: collision with snake doesn't work properly
-    // Collision with snake
     for (int i = 1; i < snake.length; i++)
     {
         if (snake.coords[0][0] + dir.x_move == snake.coords[i][0] && snake.coords[0][1] + dir.y_move == snake.coords[i][1])
