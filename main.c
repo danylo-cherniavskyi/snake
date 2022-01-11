@@ -27,6 +27,11 @@ void* getInput(void *arg)
     return NULL;
 }
 
+
+// TODO: Get rid of 'field' variable
+// TODO: More efficient way of working with dynamically allocated memory
+// TODO: Make 'width' and 'height' be customizable
+// TODO: Add Windows support
 int main(int argc, char const *argv[])
 {
     (void) argc;
