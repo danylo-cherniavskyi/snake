@@ -1,53 +1,22 @@
 #include "funcs.h"
 
-void clearField(char **field, int height, int width)
+void printField(const Snake snake)
 {
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            field[i][j] = ' ';
-        }
-    }
-}
+    assert(snake.length > 0);
 
-void printChars(char ch[], int amount)
-{
-    for (int i = 0; i < amount; i++)
-    {
-        printf("%s", ch);
-    }
-}
+    attron(COLOR_PAIR(HEAD_COLOR));
+    mvprintw(snake.coords[0][X] + 1, snake.coords[0][Y] + 1, " ");
+    attroff(COLOR_PAIR(HEAD_COLOR));
 
-void printField(char **field, int heigth, int width)
-{
-    for (int i = 0; i < heigth; i++)
+    attron(COLOR_PAIR(APPLE_COLOR));
+    mvprintw(snake.appleCoords[X] + 1, snake.appleCoords[Y] + 1, " ");
+    attroff(COLOR_PAIR(APPLE_COLOR));
+
+    for (int i = 1; i < snake.length; i++)
     {
-        for (int j = 0; j < width; j++)
-        {
-            if (field[i][j] == 'R')
-            {
-                attron(COLOR_PAIR(APPLE_COLOR));
-                mvprintw(i + 1, j + 1, " ");
-                attroff(COLOR_PAIR(APPLE_COLOR));
-            }
-            else if (field[i][j] == 'G')
-            {
-                attron(COLOR_PAIR(HEAD_COLOR));
-                mvprintw(i + 1, j + 1, " ");
-                attroff(COLOR_PAIR(HEAD_COLOR));
-            }
-            else if (field[i][j] == 'Y')
-            {
-                attron(COLOR_PAIR(BODY_COLOR));
-                mvprintw(i + 1, j + 1, " ");
-                attroff(COLOR_PAIR(BODY_COLOR));
-            }
-            else
-            {
-                mvprintw(i + 1, j + 1, "%c", field[i][j]);
-            }
-        }
+        attron(COLOR_PAIR(BODY_COLOR));
+        mvprintw(snake.coords[i][X] + 1, snake.coords[i][Y] + 1, " ");
+        attroff(COLOR_PAIR(BODY_COLOR));
     }
 }
 
@@ -68,32 +37,6 @@ bool isCollided(Snake snake, struct Direction dir, int height, int width)
     }
 
     return res;
-}
-
-void drawSnake(char **field, Snake snake)
-{
-    field[snake.coords[0][0]][snake.coords[0][1]] = 'G';
-    for (int i = 1; i < snake.length; i++)
-    {
-        field[snake.coords[i][0]][snake.coords[i][1]] = 'Y';
-    }
-}
-
-void drawApple(char **field, Snake snake)
-{
-    field[snake.appleCoords[0]][snake.appleCoords[1]] = 'R';
-}
-
-int fillCoords(Snake *snake, int position, int coord_x, int coord_y)
-{
-    snake->coords[position] = (int*)calloc(2, sizeof(int));
-
-    if (snake->coords[position] == NULL)
-        return -1;
-    
-    snake->coords[position][0] = coord_x;
-    snake->coords[position][1] = coord_y;
-    return 0;
 }
 
 void copyIntArr(int dest[], int arr[], int size)

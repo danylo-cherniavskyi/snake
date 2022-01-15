@@ -27,8 +27,6 @@ void* getInput(void *arg)
     return NULL;
 }
 
-
-// TODO: Get rid of 'field' variable
 // TODO: More efficient way of working with dynamically allocated memory
 // TODO: Make 'width' and 'height' be customizable
 // TODO: Add Windows support
@@ -63,14 +61,7 @@ int main(int argc, char const *argv[])
 
     height -= 2;
     width -= 2;
-
-    char **field = malloc(sizeof(char*) * height);
-    for (int i = 0; i < height; i++)
-    {
-        field[i] = malloc(sizeof(char) * width);
-    }
     
-    clearField(field, height, width);
     struct Direction dir = {0, 1};
 
     Snake snake = {.maxLen = height * width, .isDead = false};
@@ -94,7 +85,6 @@ int main(int argc, char const *argv[])
     while (!snake.isDead && isRunning)
     {
         clear();
-        clearField(field, height, width);
         box(stdscr, 0, 0);
         if (isCollided(snake, dir, height, width))
         {
@@ -113,9 +103,7 @@ int main(int argc, char const *argv[])
             moveSnake(&snake, dir);
         }
 
-        drawSnake(field, snake);
-        drawApple(field, snake);
-        printField(field, height, width);
+        printField(snake);
 
         usleep(200000);
         localInput = input;

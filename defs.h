@@ -9,10 +9,16 @@ typedef struct {
     int maxLen;
 } Snake;
 
-struct Direction
+typedef struct Direction
 {
     int x_move;
     int y_move;
+} Dir;
+
+enum CoordAxis
+{
+    X = 0,
+    Y = 1
 };
 
 #define ABS(x) (((x) < 0) ? (-x) : (x))
