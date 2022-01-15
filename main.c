@@ -62,15 +62,10 @@ int main(int argc, char const *argv[])
     height -= 2;
     width -= 2;
     
-    struct Direction dir = {0, 1};
+    Direction dir = {0, 1};
 
     Snake snake = {.maxLen = height * width, .isDead = false};
-    snake.coords = (int**)calloc(3, sizeof(int*));
-    for (int i = 0; i < 3; i++)
-    {
-        snake.coords[i] = (int*)calloc(2, sizeof(int));
-    }
-    snake.appleCoords = (int*)calloc(2, sizeof(int));
+    snake.coords = (Point *)calloc(3, sizeof(Point));
     snake.length = 3;
 
     pthread_t th;
@@ -82,6 +77,7 @@ int main(int argc, char const *argv[])
     addSnakeEl(&snake);
 
     createApple(&snake, height, width);
+    assert(snake.length > 1);
     while (!snake.isDead && isRunning)
     {
         clear();
@@ -92,7 +88,7 @@ int main(int argc, char const *argv[])
             continue;
         }
 
-        if (snake.coords[0][0]+dir.x_move == snake.appleCoords[0] && snake.coords[0][1]+dir.y_move == snake.appleCoords[1])
+        if (snake.coords[0].x+dir.x_move == snake.appleCoords.x && snake.coords[0].y + dir.y_move == snake.appleCoords.y)
         {
             addSnakeEl(&snake);
             moveSnake(&snake, dir);
@@ -113,22 +109,22 @@ int main(int argc, char const *argv[])
             snake.isDead = true;
             isRunning = false;
         }
-        if (localInput == 'w' && dir.x_move != 1 && ABS(snake.coords[1][0] - snake.coords[0][0]) == 0)
+        if (localInput == 'w' && dir.x_move != 1 && ABS(snake.coords[1].x - snake.coords[0].x) == 0)
         {
             dir.y_move = 0;
             dir.x_move = -1;
         }
-        if (localInput == 's' && dir.x_move != -1 && ABS(snake.coords[1][0] - snake.coords[0][0]) == 0)
+        if (localInput == 's' && dir.x_move != -1 && ABS(snake.coords[1].x - snake.coords[0].x) == 0)
         {
             dir.y_move = 0;
             dir.x_move = 1;
         }
-        if (localInput == 'a' && dir.y_move != 1 && ABS(snake.coords[1][1] - snake.coords[0][1]) == 0)
+        if (localInput == 'a' && dir.y_move != 1 && ABS(snake.coords[1].y - snake.coords[0].y) == 0)
         {
             dir.x_move = 0;
             dir.y_move = -1;
         }
-        if (localInput == 'd' && dir.y_move != -1 && ABS(snake.coords[1][1] - snake.coords[0][1]) == 0)
+        if (localInput == 'd' && dir.y_move != -1 && ABS(snake.coords[1].y - snake.coords[0].y) == 0)
         {
             dir.x_move = 0;
             dir.y_move = 1;

@@ -11,8 +11,8 @@
 #include "defs.h"
 
 void printField(const Snake snake);
-void moveSnake(Snake *snake, struct Direction dir);
-bool isCollided(Snake snake, struct Direction dir, int height, int width);
+void moveSnake(Snake *snake, Direction dir);
+bool isCollided(Snake snake, Direction dir, int height, int width);
 void createApple(Snake *snake, int height, int width);
 void addSnakeEl(Snake *snake);
 

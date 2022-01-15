@@ -2,24 +2,22 @@
 #define DEFS_H
 
 typedef struct {
+    int x, y;
+} Point;
+
+typedef struct {
     int length;
-    int **coords;
-    int *appleCoords;
+    Point *coords;
+    Point appleCoords;
     bool isDead;
     int maxLen;
 } Snake;
 
-typedef struct Direction
+typedef struct
 {
     int x_move;
     int y_move;
-} Dir;
-
-enum CoordAxis
-{
-    X = 0,
-    Y = 1
-};
+} Direction;
 
 #define ABS(x) (((x) < 0) ? (-x) : (x))
 #define HEAD_COLOR 1
