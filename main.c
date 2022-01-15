@@ -99,7 +99,13 @@ int main(int argc, char const *argv[])
 
         printField(snake);
 
-        usleep(200000);
+        if (snake.length == snake.maxLen)
+        {
+            isRunning = false;
+            continue;
+        }
+
+        usleep(400000);
         localInput = input;
 
         if (localInput == 'q' || localInput == 'Q')
