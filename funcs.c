@@ -39,14 +39,6 @@ bool isCollided(Snake snake, Direction dir, int height, int width)
     return res;
 }
 
-void copyIntArr(int dest[], int arr[], int size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        dest[i] = arr[i];
-    }
-}
-
 void createApple(Snake *snake, int height, int width)
 {
     srand(time(NULL));
@@ -55,7 +47,7 @@ void createApple(Snake *snake, int height, int width)
     bool isSet = false;
 
     while (!isSet)
-    { 
+    {
         isSet = true;
         for (int i = 0; i < snake->length; i++)
         {
@@ -73,27 +65,33 @@ void createApple(Snake *snake, int height, int width)
     snake->appleCoords.y = appleYCoord;
 }
 
-void addSnakeEl(Snake *snake)
+void snakeInit(Snake *snake, int fieldWidth, int fieldHeight, Point startPos)
 {
-    Point *tmp = NULL;
+    snake->isDead = false;
+    snake->length = 0;
+    snake->maxLen = fieldHeight * fieldWidth;
+    snake->coords = calloc(snake->maxLen, sizeof(Point));
+    snake->coords[0] = startPos;
     snake->length++;
-    tmp = (Point *)realloc(snake->coords, snake->length*sizeof(Point));
+}
 
-    if (tmp)
+void addSnakeEl(Snake *snake, const Direction dir)
+{
+    assert(snake->length < snake->maxLen);
+    snake->length++;
+
+    if (snake->length > 2)
     {
-        snake->coords = tmp;
+        snake->coords[snake->length - 1].x = snake->coords[snake->length - 2].x +
+                                             (snake->coords[snake->length - 2].x - snake->coords[snake->length - 3].x);
+
+        snake->coords[snake->length - 1].y = snake->coords[snake->length - 2].y +
+                                             (snake->coords[snake->length - 2].y - snake->coords[snake->length - 3].y);
     }
     else
     {
-        snake->length--;
-        return;
+        snake->coords[snake->length - 1] = (Point){snake->coords[0].x - dir.x_move, snake->coords[0].x - dir.y_move};
     }
-
-    snake->coords[snake->length-1].x = snake->coords[snake->length-2].x + \
-    (snake->coords[snake->length-2].x - snake->coords[snake->length-3].x);
-    
-    snake->coords[snake->length-1].y = snake->coords[snake->length-2].y + \
-    (snake->coords[snake->length-2].y - snake->coords[snake->length-3].y);
 }
 
 void moveSnake(Snake *snake, Direction dir)

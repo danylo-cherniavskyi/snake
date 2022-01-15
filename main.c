@@ -12,11 +12,11 @@
 int input = 0;
 bool isRunning = true;
 
-void* getInput(void *arg)
+void *getInput(void *arg)
 {
-    (void) arg;
+    (void)arg;
     int ch = 0;
-    while(isRunning)
+    while (isRunning)
     {
         ch = getch();
         if (ch != ERR)
@@ -27,13 +27,12 @@ void* getInput(void *arg)
     return NULL;
 }
 
-// TODO: More efficient way of working with dynamically allocated memory
 // TODO: Make 'width' and 'height' be customizable
 // TODO: Add Windows support
 int main(int argc, char const *argv[])
 {
-    (void) argc;
-    (void) argv;
+    (void)argc;
+    (void)argv;
 
     initscr();
     if (!has_colors())
@@ -61,20 +60,18 @@ int main(int argc, char const *argv[])
 
     height -= 2;
     width -= 2;
-    
-    Direction dir = {0, 1};
 
-    Snake snake = {.maxLen = height * width, .isDead = false};
-    snake.coords = (Point *)calloc(3, sizeof(Point));
-    snake.length = 3;
+    Direction dir = {0, 1};
+    Snake snake;
+
+    snakeInit(&snake, width, height, (Point){1, 1});
+    addSnakeEl(&snake, dir);
+    addSnakeEl(&snake, dir);
 
     pthread_t th;
 
     pthread_create(&th, NULL, getInput, NULL);
     int localInput = 0;
-    addSnakeEl(&snake);
-    addSnakeEl(&snake);
-    addSnakeEl(&snake);
 
     createApple(&snake, height, width);
     assert(snake.length > 1);
@@ -82,15 +79,16 @@ int main(int argc, char const *argv[])
     {
         clear();
         box(stdscr, 0, 0);
+
         if (isCollided(snake, dir, height, width))
         {
             snake.isDead = true;
             continue;
         }
 
-        if (snake.coords[0].x+dir.x_move == snake.appleCoords.x && snake.coords[0].y + dir.y_move == snake.appleCoords.y)
+        if (snake.coords[0].x + dir.x_move == snake.appleCoords.x && snake.coords[0].y + dir.y_move == snake.appleCoords.y)
         {
-            addSnakeEl(&snake);
+            addSnakeEl(&snake, dir);
             moveSnake(&snake, dir);
             createApple(&snake, height, width);
         }

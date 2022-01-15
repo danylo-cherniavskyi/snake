@@ -1,4 +1,4 @@
-FLAGS = -Wall -Wextra -pedantic
+FLAGS = -g -Wall -Wextra -pedantic
 LIBS = -lncurses -lpthread
 SOURCES = main.c funcs.c
 
