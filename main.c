@@ -4,17 +4,17 @@
 #include <time.h>
 #include <unistd.h>
 #include <ncurses.h>
-#include <pthread.h>
 
 #include "funcs.h"
+#include "threads.h"
 #include "defs.h"
 
 int input = 0;
 bool isRunning = true;
 
-void *getInput(void *arg_win)
+RetVal getInput(Arg argWin)
 {
-    WINDOW *win = (WINDOW *)arg_win;
+    WINDOW *win = (WINDOW *)argWin;
     int ch = 0;
     while (isRunning)
     {
@@ -27,7 +27,6 @@ void *getInput(void *arg_win)
     return NULL;
 }
 
-// TODO: Add Windows support
 int main(int argc, char const *argv[])
 {
     (void)argc;
@@ -69,9 +68,9 @@ int main(int argc, char const *argv[])
     addSnakeEl(&snake, dir);
     addSnakeEl(&snake, dir);
 
-    pthread_t th;
+    Thread th;
 
-    pthread_create(&th, NULL, getInput, win);
+    threadCreate(&th, getInput, win);
     int localInput = 0;
 
     createApple(&snake, height, width);
@@ -136,7 +135,7 @@ int main(int argc, char const *argv[])
         }
     }
     isRunning = false;
-    pthread_join(th, NULL);
+    threadJoin(th, NULL);
     int scrHeight = 0;
     int scrWidth = 0;
     getmaxyx(stdscr, scrHeight, scrWidth);
