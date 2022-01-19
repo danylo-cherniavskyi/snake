@@ -12,13 +12,13 @@
 int input = 0;
 bool isRunning = true;
 
-void *getInput(void *arg)
+void *getInput(void *arg_win)
 {
-    (void)arg;
+    WINDOW *win = (WINDOW *)arg_win;
     int ch = 0;
     while (isRunning)
     {
-        ch = getch();
+        ch = wgetch(win);
         if (ch != ERR)
         {
             input = ch;
@@ -27,7 +27,6 @@ void *getInput(void *arg)
     return NULL;
 }
 
-// TODO: Make 'width' and 'height' be customizable
 // TODO: Add Windows support
 int main(int argc, char const *argv[])
 {
@@ -41,25 +40,27 @@ int main(int argc, char const *argv[])
         fprintf(stderr, "ERROR: Your terminal does not support colored output!\n");
         exit(1);
     }
-    cbreak();
     start_color();
+    cbreak();
+    
     halfdelay(1);
-    keypad(stdscr, true);
     noecho();
+    keypad(stdscr, true);
     curs_set(0);
-    box(stdscr, 0, 0);
 
     init_pair(HEAD_COLOR, COLOR_WHITE, COLOR_GREEN);
     init_pair(BODY_COLOR, COLOR_WHITE, COLOR_YELLOW);
     init_pair(APPLE_COLOR, COLOR_WHITE, COLOR_RED);
 
-    int width = 0;
-    int height = 0;
+    int width = 5;
+    int height = 5;
 
-    getmaxyx(stdscr, height, width);
+    int window_width = width + 2;
+    int window_height = height + 2;
 
-    height -= 2;
-    width -= 2;
+    WINDOW *win = newwin(window_height, window_width, 0, 0);
+    keypad(win, true);
+    wborder(win, 0, 0, 0, 0, 0, 0, 0, 0);
 
     Direction dir = {0, 1};
     Snake snake;
@@ -70,15 +71,15 @@ int main(int argc, char const *argv[])
 
     pthread_t th;
 
-    pthread_create(&th, NULL, getInput, NULL);
+    pthread_create(&th, NULL, getInput, win);
     int localInput = 0;
 
     createApple(&snake, height, width);
     assert(snake.length > 1);
     while (!snake.isDead && isRunning)
     {
-        clear();
-        box(stdscr, 0, 0);
+        wclear(win);
+        wborder(win, 0, 0, 0, 0, 0, 0, 0, 0);
 
         if (isCollided(snake, dir, height, width))
         {
@@ -97,7 +98,7 @@ int main(int argc, char const *argv[])
             moveSnake(&snake, dir);
         }
 
-        printField(snake);
+        printField(win, snake);
 
         if (snake.length == snake.maxLen)
         {
@@ -105,7 +106,7 @@ int main(int argc, char const *argv[])
             continue;
         }
 
-        usleep(400000);
+        usleep(500000);
         localInput = input;
 
         if (localInput == 'q' || localInput == 'Q')
@@ -136,19 +137,23 @@ int main(int argc, char const *argv[])
     }
     isRunning = false;
     pthread_join(th, NULL);
+    int scrHeight = 0;
+    int scrWidth = 0;
+    getmaxyx(stdscr, scrHeight, scrWidth);
 
+    delwin(win);
     if (snake.isDead)
     {
-        mvprintw(height / 2, width / 2 - 6, "Game over!");
-        mvprintw(height / 2 + 1, width / 2 - 11, "Press any key to exit.");
+        mvprintw(scrHeight / 2, scrWidth / 2 - 6, "Game over!");
+        mvprintw(scrHeight / 2 + 1, scrWidth / 2 - 11, "Press any key to exit.");
         nocbreak();
         cbreak();
         getch();
     }
     else
     {
-        mvprintw(height / 2, width / 2 - 4, "You won!");
-        mvprintw(height / 2 + 1, width / 2 - 11, "Press any key to exit.");
+        mvprintw(scrHeight / 2, scrWidth / 2 - 4, "You won!");
+        mvprintw(scrHeight / 2 + 1, scrWidth / 2 - 11, "Press any key to exit.");
         nocbreak();
         cbreak();
         getch();

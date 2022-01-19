@@ -1,22 +1,22 @@
 #include "funcs.h"
 
-void printField(const Snake snake)
+void printField(WINDOW *win, const Snake snake)
 {
     assert(snake.length > 0);
 
-    attron(COLOR_PAIR(HEAD_COLOR));
-    mvprintw(snake.coords[0].x + 1, snake.coords[0].y + 1, " ");
-    attroff(COLOR_PAIR(HEAD_COLOR));
+    wattron(win, COLOR_PAIR(HEAD_COLOR));
+    mvwprintw(win, snake.coords[0].x + 1, snake.coords[0].y + 1, " ");
+    wattroff(win, COLOR_PAIR(HEAD_COLOR));
 
-    attron(COLOR_PAIR(APPLE_COLOR));
-    mvprintw(snake.appleCoords.x + 1, snake.appleCoords.y + 1, " ");
-    attroff(COLOR_PAIR(APPLE_COLOR));
+    wattron(win, COLOR_PAIR(APPLE_COLOR));
+    mvwprintw(win, snake.appleCoords.x + 1, snake.appleCoords.y + 1, " ");
+    wattroff(win, COLOR_PAIR(APPLE_COLOR));
 
     for (int i = 1; i < snake.length; i++)
     {
-        attron(COLOR_PAIR(BODY_COLOR));
-        mvprintw(snake.coords[i].x + 1, snake.coords[i].y + 1, " ");
-        attroff(COLOR_PAIR(BODY_COLOR));
+        wattron(win, COLOR_PAIR(BODY_COLOR));
+        mvwprintw(win, snake.coords[i].x + 1, snake.coords[i].y + 1, " ");
+        wattroff(win, COLOR_PAIR(BODY_COLOR));
     }
 }
 

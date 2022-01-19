@@ -10,7 +10,7 @@
 
 #include "defs.h"
 
-void printField(const Snake snake);
+void printField(WINDOW *win, const Snake snake);
 void moveSnake(Snake *snake, Direction dir);
 bool isCollided(Snake snake, Direction dir, int height, int width);
 void createApple(Snake *snake, int height, int width);
